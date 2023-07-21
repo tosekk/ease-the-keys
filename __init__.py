@@ -20,16 +20,20 @@ bl_info = {
 import bpy
 
 
+from . import _reload_
 from . import ui
 from . import utils
 
 
+_reload_.reload_modules()
+
+
 def register():
-    pass
+    ui.register_modules()
 
 
 def unregister():
-    pass
+    ui.unregister_modules()
 
 
 if __name__ == "__main__":
