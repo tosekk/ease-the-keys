@@ -11,7 +11,7 @@ class ETKProperties(PropertyGroup):
 
     favor: FloatProperty(
         name="Favor",
-        description="",
+        description="Defines the interpolation of eased keys",
         default=0.5,
         min=0.0,
         max=1.0,

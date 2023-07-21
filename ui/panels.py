@@ -7,7 +7,6 @@ from bpy.types import Panel
 
 class ANIM_PT_EaseTheKeys(Panel):
     """Ease the Keys UI Panel"""
-    bl_idname = ""
     bl_label = "Ease the Keys"
     bl_space_type = "GRAPH_EDITOR"
     bl_region_type = "UI"
@@ -24,16 +23,11 @@ class ANIM_PT_EaseTheKeys(Panel):
         properties = scene.etk
 
         col = layout.column()
-        col.scale_y = 1.5
-        
+        col.scale_y = 1.2
+
         col.prop(properties, "favor")
-        col.separator()
-
         col.prop(properties, "midpoint")
-        col.separator()
-
-        col.operator("object.etk.ease_keys")
-        col.separator()
+        col.operator("etk.ease_keys")
 
 
 classes = [

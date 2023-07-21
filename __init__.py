@@ -29,11 +29,13 @@ _reload_.reload_modules()
 
 
 def register():
+    utils.register_modules()
     ui.register_modules()
 
 
 def unregister():
     ui.unregister_modules()
+    utils.unregister_modules()
 
 
 if __name__ == "__main__":

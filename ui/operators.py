@@ -7,7 +7,7 @@ from bpy.types import Operator
 
 class ANIM_OT_EaseTheKeys(Operator):
     """Ease the Keys UI Button"""
-    bl_idname = "object.etk.ease_keys"
+    bl_idname = "etk.ease_keys"
     bl_label = "Ease the Keys"
     bl_options = {'REGISTER', 'UNDO'}
 
