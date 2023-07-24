@@ -15,7 +15,7 @@ class ETKProperties(PropertyGroup):
         default=0.5,
         min=0.0,
         max=1.0,
-        update=lambda self, context: self.update_midpoint(context)
+        # update=lambda self, context: self.update_midpoint(context)
     )
 
     midpoint: FloatProperty(
@@ -24,7 +24,7 @@ class ETKProperties(PropertyGroup):
         default=0.5,
         min=0.0,
         max=1.0,
-        update=lambda self, context: self.update_midpoint(context)
+        # update=lambda self, context: self.update_midpoint(context)
     )
 
 
