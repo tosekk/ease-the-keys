@@ -27,7 +27,6 @@ class ANIM_PT_EaseTheKeys(Panel):
 
         col.prop(properties, "favor")
         col.prop(properties, "midpoint")
-        col.operator("etk.ease_keys")
 
 
 classes = [

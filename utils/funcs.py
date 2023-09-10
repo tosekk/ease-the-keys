@@ -1,63 +1,46 @@
-# # This software is dedicated to the public domain under the Creative Commons Zero (CC0) license.
-# # SPDX-License-Identifier: CC0-1.0
+# This software is dedicated to the public domain under the Creative Commons Zero (CC0) license.
+# SPDX-License-Identifier: CC0-1.0
 
-# import bpy
+import bpy
 
-# def interpolate_keyframes(region_start, region_end, favor, midpoint):
-#     # Get the active object and its animation data
-#     obj = bpy.context.active_object
-#     anim_data = obj.animation_data
 
-#     if anim_data is None or anim_data.action is None:
-#         print("No active animation data found.")
-#         return
+import math
 
-#     action = anim_data.action
-#     fcurve_dict = {}  # Dictionary to store fcurves by data path
 
-#     # Collect all fcurves in the specified region
-#     for fcurve in action.fcurves:
-#         for keyframe_point in fcurve.keyframe_points:
-#             frame = keyframe_point.co.x
-#             if region_start <= frame <= region_end:
-#                 if fcurve.data_path in fcurve_dict:
-#                     fcurve_dict[fcurve.data_path].append(keyframe_point)
-#                 else:
-#                     fcurve_dict[fcurve.data_path] = [keyframe_point]
+def interpolate_keyframes(favor: float, midpoint: float, fcurve) -> None:
 
-#     # Interpolate the selected keyframes
-#     for data_path, keyframe_points in fcurve_dict.items():
-#         if len(keyframe_points) < 2:
-#             continue
+    selected_kpoints = [keyframe for keyframe in fcurve.keyframe_points 
+                        if keyframe.select_control_point]
 
-#         first_point = keyframe_points[0]
-#         last_point = keyframe_points[-1]
-#         total_frames = last_point.co.x - first_point.co.x
-#         mid_frame = first_point.co.x + total_frames * midpoint
+    left = min(selected_kpoints, key=lambda keyframe: keyframe.co_ui.x)
+    right = max(selected_kpoints, key=lambda keyframe: keyframe.co_ui.x)
 
-#         for point in keyframe_points:
-#             frame = point.co.x
-#             t = (frame - first_point.co.x) / total_frames
+    low = min(selected_kpoints, key=lambda keyframe: keyframe.co_ui.y)
+    high = max(selected_kpoints, key=lambda keyframe: keyframe.co_ui.y)
 
-#             if frame < mid_frame:
-#                 factor = t / midpoint if midpoint > 0 else 0
-#             else:
-#                 factor = (1 - t) / (1 - midpoint) if midpoint < 1 else 0
+    range_y = high.co_ui.y - low.co_ui.y
 
-#             if favor == 0:  # Linear interpolation
-#                 point.interpolation = 'LINEAR'
-#             elif favor == 1:  # Constant interpolation
-#                 point.interpolation = 'CONSTANT'
+    for keyframe in selected_kpoints:
 
-#             # Interpolate the value
-#             for i in range(len(point.co)):
-#                 point.co[i] = (1 - factor) * first_point.co[i] + factor * last_point.co[i]
+        mapped_x = keyframe.co_ui.x / (right.co_ui.x - left.co_ui.x)
+        mapped_favor = map_range(favor, 0.0, 1.0, 1.0, 50.0)
 
-# # Example usage:
-# # Define the region of keyframes to select and interpolate
-# region_start = 1  # Start frame of the region
-# region_end = 50   # End frame of the region
-# favor = 0.5       # 0 for linear, 1 for constant
-# midpoint = 0.5    # 0 to 1 (0 means midpoint on the first keyframe, 1 means on the last keyframe)
+        # Thank you, Junichiro Horikawa https://twitter.com/jhorikawa_err/status/1700894368021012646?s=20
+        keyframe.co_ui.y = 1.0 / (1.0 + math.exp(-mapped_favor * (mapped_x - midpoint)))
+        keyframe.co_ui.y *= range_y
 
-# interpolate_keyframes(region_start, region_end, favor, midpoint)
+        if favor < 0.1:
+            keyframe.interpolation = "LINEAR"
+        elif 0.1 <= favor <= 0.9:
+            keyframe.interpolation = "BEZIER"
+        else: 
+            keyframe.interpolation = "CONSTANT"
+            
+            
+
+def map_range(value, input_min, input_max, output_min, output_max):
+    if input_max - input_min == 0:
+        return output_min
+    else:
+        mapped_value = ((value - input_min) / (input_max - input_min)) * (output_max - output_min) + output_min
+        return mapped_value
